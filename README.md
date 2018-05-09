@@ -1,4 +1,4 @@
-##SCD Type 2 Change data capture using Apache Spark
+## SCD Type 2 Change data capture using Apache Spark
 
 This is a CDC (change data capture component). 
 Module needs 5 arguments. 
@@ -34,7 +34,7 @@ CDC is performed and the results are saved with an additional column **CDC_statu
 #### Ouput Sample
 
 |  Id |Name   |Phone   |  Id_1 |Name_1   |Phone_1   |cdc_status   |
-| ------------ | ------------ | ------------ |
+| ------------ | ------------ | ------------ | ------------ | ------------ | ------------ |------------ |
 |  1 | Hari  |99999   |1 | Hari  |99990   |U|
 |  2 | Dipu  |99997   |2 | Dipu  |99997   |N|
 |  3 | Doe  |99991   |Null|Null|Null|D|
