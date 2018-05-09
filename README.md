@@ -38,6 +38,6 @@ CDC is performed and the results are saved with an additional column **CDC_statu
 |  1 | Hari  |99999   |1 | Hari  |99990   |U|
 |  2 | Dipu  |99997   |2 | Dipu  |99997   |N|
 |  3 | Doe  |99991   |Null|Null|Null|D|
-|  Null | Null  |Null   |  4 | Jane  |99992   |D|
+|  Null | Null  |Null   |  4 | Jane  |99992   |I|
 
 > The results are saved as parquet file in the output path mentioned.
