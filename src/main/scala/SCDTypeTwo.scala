@@ -2,8 +2,7 @@
   * Created by arumuhx on 5/3/2018.
   */
 
-
-import org.apache.spark.{SparkContext, SparkConf}
+import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.sql.hive.HiveContext
 import org.apache.spark.sql.functions.{col, concat}
 import org.apache.spark.sql.functions.udf
@@ -19,7 +18,7 @@ object SCDTypeTwo {
     }
 
 
-    val conf = new SparkConf().setAppName("SCDType2")
+    val conf = new SparkConf().setAppName("SCDType2").setMaster("local[*]")
     val sc = new SparkContext(conf)
     val sqlContext = new HiveContext(sc)
     import sqlContext.implicits._
@@ -44,11 +43,23 @@ object SCDTypeTwo {
       hash(a)
     )
 
+    def isNull(n: String): String = {
+      if (n == null) {
+        "_x_"
+      } else {
+        n
+      }
+    }
+
+    val defaultNull = udf((a: String) =>
+      isNull(a)
+    )
+
     /* Get all columns needed for determining CDC - IDs for determine whats new and old. and Column list for comparing in CDC*/
 
 
-    val hashYesterdayDF = yesterdayDF.withColumn("yesterdayHashId", hashId(concat(idCols.map(c => col(c)): _*))).withColumn("yesterdayCdcId", hashId(concat(cdcCols.map(c => col(c)): _*)))
-    val hashTodayDF = todayDF.withColumn("todayHashId", hashId(concat(idCols.map(c => col(c)): _*))).withColumn("todayCdcId", hashId(concat(cdcCols.map(c => col(c)): _*)))
+    val hashYesterdayDF = yesterdayDF.withColumn("yesterdayHashId", hashId(concat(idCols.map(c => defaultNull(col(c))): _*))).withColumn("yesterdayCdcId", hashId(concat(cdcCols.map(c => defaultNull(col(c))): _*)))
+    val hashTodayDF = todayDF.withColumn("todayHashId", hashId(concat(idCols.map(c => defaultNull(col(c))): _*))).withColumn("todayCdcId", hashId(concat(cdcCols.map(c => defaultNull(col(c))): _*)))
 
     var colvals = hashTodayDF.schema.fieldNames
     val lookup = colvals.map(c => c + "_1").toSeq
@@ -98,8 +109,6 @@ object SCDTypeTwo {
       .drop(resultDF.col("todayHashId_1"))
       .drop(resultDF.col("todayCdcId_1"))
       .drop(resultDF.col("yesterdayCdcId"))
-
-    saveDF.show(truncate = false)
     saveDF.write.mode("overwrite").parquet(output_path)
     sc.stop()
 
